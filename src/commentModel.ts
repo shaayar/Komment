@@ -20,8 +20,8 @@ export interface TemplateVariables {
 }
 
 export function extractMetadataTags(text: string): { primaryTag: string; extraTags: string[]; priority?: string; completed: boolean } {
-    const body = text.replace(/^\s*(?:\/\/+|\/\*+|\*\/?|\*+|#+|--+|<!--|;+)/, '').trim();
-    const primaryMatch = body.match(/^([A-Za-z0-9_?!*+\-]+)/);
+    const body = stripCommentDelimiter(text).trim();
+    const primaryMatch = body.match(/^([A-Za-z0-9_?!*+\-/]+)/);
     const primaryTag = primaryMatch ? primaryMatch[1] : '';
     const extraTags: string[] = [];
     const extraTagPattern = /\[([^\]]+)\]|\(([^)]+)\)/g;
@@ -76,4 +76,12 @@ export function commentsToJson(comments: CollectedComment[]): string {
 
 function quoteCsvValue(value: string): string {
     return '"' + value.replace(/"/g, '""') + '"';
+}
+
+function stripCommentDelimiter(text: string): string {
+    const trimmed = text.trimLeft();
+    const delimiters = ['<!--', '//', '/*', '--', '#', ';', '*'];
+    const delimiter = delimiters.find((value) => trimmed.indexOf(value) === 0);
+
+    return delimiter ? trimmed.slice(delimiter.length) : trimmed;
 }

@@ -13,6 +13,11 @@ function testExtractMetadataTags(): void {
     assert.strictEqual(result.priority, 'HIGH');
 }
 
+function testExtractSymbolMetadataTags(): void {
+    const result = extractMetadataTags('// // deprecated');
+    assert.strictEqual(result.primaryTag, '//');
+}
+
 function testTemplateVariables(): void {
     const rendered = replaceTemplateVariables(
         'TODO ${date} ${time} ${author} ${year}',
@@ -61,6 +66,7 @@ function testDistributionAndCsv(): void {
 }
 
 testExtractMetadataTags();
+testExtractSymbolMetadataTags();
 testTemplateVariables();
 testDistributionAndCsv();
 
