@@ -1,3 +1,5 @@
+/// <reference path="../typings/typings.d.ts" />
+
 import * as assert from 'assert';
 import {
     buildTagDistribution,
@@ -5,6 +7,7 @@ import {
     extractMetadataTags,
     replaceTemplateVariables
 } from '../commentModel';
+import { parseKommentTags } from '../parser';
 
 function testExtractMetadataTags(): void {
     const result = extractMetadataTags('// TODO [urgent] Fix bug (HIGH)');
@@ -16,6 +19,13 @@ function testExtractMetadataTags(): void {
 function testExtractSymbolMetadataTags(): void {
     const result = extractMetadataTags('// // deprecated');
     assert.strictEqual(result.primaryTag, '//');
+}
+
+function testParseKommentTags(): void {
+    const result = parseKommentTags('// TODO [urgent] Fix bug [HIGH]');
+    assert.strictEqual(result.primaryTag, 'TODO');
+    assert.deepStrictEqual(result.extraTags, ['urgent', 'HIGH']);
+    assert.strictEqual(result.priority, 'HIGH');
 }
 
 function testTemplateVariables(): void {
@@ -67,6 +77,7 @@ function testDistributionAndCsv(): void {
 
 testExtractMetadataTags();
 testExtractSymbolMetadataTags();
+testParseKommentTags();
 testTemplateVariables();
 testDistributionAndCsv();
 

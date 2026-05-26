@@ -1,5 +1,12 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import { Configuration } from './configuration';
+import { extractMetadataTags } from './commentModel';
+
+const getVsCode = (): typeof vscode => require('vscode');
+
+export function parseKommentTags(text: string): ReturnType<typeof extractMetadataTags> {
+    return extractMetadataTags(text);
+}
 
 export class Parser {
     private tags: CommentTag[] = [];
@@ -23,7 +30,7 @@ export class Parser {
     public supportedLanguage = true;
 
     // Read from the package.json
-    private contributions: Contributions = vscode.workspace.getConfiguration('better-comments') as any;
+    private contributions: Contributions = getVsCode().workspace.getConfiguration('better-comments') as any;
 
     // The configuration necessary to find supported languages on startup
     private configuration: Configuration;
@@ -90,7 +97,7 @@ export class Parser {
         while (match = regEx.exec(text)) {
             let startPos = activeEditor.document.positionAt(match.index);
             let endPos = activeEditor.document.positionAt(match.index + match[0].length);
-            let range = { range: new vscode.Range(startPos, endPos) };
+            let range = { range: new (getVsCode().Range)(startPos, endPos) };
 
             // Required to ignore the first line of .py files (#61)
             if (this.ignoreFirstLine && startPos.line === 0 && startPos.character === 0) {
@@ -148,7 +155,7 @@ export class Parser {
             while (line = commentRegEx.exec(commentBlock)) {
                 let startPos = activeEditor.document.positionAt(match.index + line.index + line[2].length);
                 let endPos = activeEditor.document.positionAt(match.index + line.index + line[0].length);
-                let range: vscode.DecorationOptions = { range: new vscode.Range(startPos, endPos) };
+                let range: vscode.DecorationOptions = { range: new (getVsCode().Range)(startPos, endPos) };
 
                 // Find which custom delimiter was used in order to add it to the collection
                 let matchString = line[3] as string;
@@ -197,7 +204,7 @@ export class Parser {
             while (line = commentRegEx.exec(commentBlock)) {
                 let startPos = activeEditor.document.positionAt(match.index + line.index + line[2].length);
                 let endPos = activeEditor.document.positionAt(match.index + line.index + line[0].length);
-                let range: vscode.DecorationOptions = { range: new vscode.Range(startPos, endPos) };
+                let range: vscode.DecorationOptions = { range: new (getVsCode().Range)(startPos, endPos) };
 
                 // Find which custom delimiter was used in order to add it to the collection
                 let matchString = line[3] as string;
@@ -301,7 +308,7 @@ export class Parser {
                 tag: item.tag,
                 escapedTag: escapedSequence.replace(/\//gi, "\\/"), // ! hardcoded to escape slashes
                 ranges: [],
-                decoration: vscode.window.createTextEditorDecorationType(options)
+                decoration: getVsCode().window.createTextEditorDecorationType(options)
             });
         }
     }
