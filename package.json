@@ -40,6 +40,8 @@
     "scripts": {
         "vscode:prepublish": "npm run compile && npm run package-web",
         "compile": "tsc -p ./",
+        "pretest:unit": "tsc src/test/unit.ts --outDir out --rootDir src --module commonjs --target es6 --strict --alwaysStrict --noImplicitAny --noImplicitReturns --strictNullChecks --noUnusedLocals --lib es6 --types node --sourceMap",
+        "test:unit": "npm run compile && node out/test/unit.js",
         "watch": "tsc -watch -p ./",
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "compile-web": "webpack --config ./build/web-extension.webpack.config.js",
